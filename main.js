@@ -14,6 +14,8 @@ let xL;
 let xR;
 let zU;
 let zD;
+let speedX = 3;
+let speedZ = 5;
 
 // Event Listners
 document.addEventListener("keydown", (e) => {
@@ -43,25 +45,22 @@ function drawWorld() {
     let i = world[0];
     if (xL != 0 || zU != 0 || xR != 0 || zD != 0) {
         if (xL) {
-            i.x++;
-            xL = 0;
+            i.x -= speedX;
         }
         if (xR) {
-            i.x--;
-            xR = 0;
+            i.x += speedX;
         }
         if (zU) {
-            i.h++;
-            i.y--;
-            i.w++;
-            zU = 0;
+            i.h += speedZ;
+            i.y -= speedZ;
+            i.w += speedZ;
         }
         if (zD) {
-            i.h--;
-            i.y++;
-            i.w--;
-            zD = 0;
+            i.h -= speedZ;
+            i.y += speedZ;
+            i.w -= speedZ;
         }
+        (xL = 0), (xR = 0), (zU = 0), (zD = 0);
     }
     if (i.h === 0 || i.w === 0) {
         world[0] = "";
