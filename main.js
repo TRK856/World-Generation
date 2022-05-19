@@ -106,13 +106,15 @@ function drawWorld() {
             }
             if (zF) {
                 world[i].h += speedZ;
-                world[i].y -= speedZ;
+                world[i].y -= (speedZ) / 2;
                 world[i].w += speedZ;
+                world[i].x -= (speedZ) / 2;
             }
             if (zB) {
                 world[i].h -= speedZ;
-                world[i].y += speedZ;
+                world[i].y += (speedZ) / 2;;
                 world[i].w -= speedZ;
+                world[i].x += (speedZ) / 2;
             }
         }
         if (world[i].h === 0 || i.w === 0) {
