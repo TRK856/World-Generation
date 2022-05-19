@@ -1,7 +1,35 @@
 body {
-    text-align: center;
-  }
-  
-canvas {
-  border: 1px solid grey;
+    overflow: hidden;
+    margin: 0;
+}
+
+.tutorial {
+    position: absolute;
+    font-size: 1.1rem;
+    background: black;
+    color: white;
+    bottom: 50px;
+    left: 50px;
+    padding: 0.8rem 1rem;
+}
+
+.arrows {
+    font-size: 0.9rem;
+    padding-left: 0.5rem;
+}
+
+.buttons {
+    font-size: 0.95rem;
+}
+
+button {
+    width: 80%;
+    text-decoration: underline;
+    font-size: 0.9rem;
+    color: white;
+    background-color: black;
+    cursor: pointer;
+    text-align: left;
+    word-wrap: normal;
+    white-space: nowrap;
 }

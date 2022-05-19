@@ -2,24 +2,42 @@
 let cnv = document.getElementById("my-canvas");
 let ctx = cnv.getContext("2d");
 
-// canvas hiegth + width
-cnv.width = 800;
-cnv.height = 600;
+// canvas height + width
+cnv.width = window.innerWidth;
+cnv.height = window.innerHeight;
 
 // varibles + array nessasary for function of code
-let world = [{ x: 400, y: 300, w: 50, h: 50 }];
-let player = { keyHandler: {} };
+let world = [{ x: 400, y: 300, w: 50, h: 50 }, { x: 200, y: 300, w: 50, h: 50 }],
+    tutorialStoredInfo = {
+        active: false,
+        origInnerText: "",
+    },
+    player = { keyHandler: {} },
+    xL,
+    xR,
+    zF,
+    zB,
+    speedX = 3,
+    speedY = 3,
+    speedZ = 5;
 requestAnimationFrame(drawWorld);
-let xL;
-let xR;
-let zU;
-let zD;
-let speedX = 3;
-let speedZ = 5;
 
 // Event Listners
+document.getElementById("tutorial_activate").addEventListener("click", () => {
+    tutorialStoredInfo.origInnerText = document.getElementById("tutorial").innerHTML
+    tutorial(1)
+});
+
 document.addEventListener("keydown", (e) => {
     player.keyHandler[e.code] = true;
+    if (tutorialStoredInfo.active === true) {
+        if (tutorialStoredInfo.step === 2) {
+            tutorial(tutorialStoredInfo.step);
+        }
+        if (tutorialStoredInfo.step === 3) {
+            tutorial(tutorialStoredInfo.step);
+        }
+    }
     moveScreen();
 });
 
@@ -40,32 +58,68 @@ function findAllOccurancesID(obj, findValue) {
     return [placeInArray, numberOfFindValues];
 }
 
+// tutorial
+function tutorial(step) {
+    let tutorialObj = document.getElementById("tutorial");
+    if (step === 1) {
+        tutorialStoredInfo.active = true;
+        tutorialStoredInfo.step = 2;
+        tutorialObj.innerText = "use the arrow keys to move";
+    } else if (step === 2) {
+        if (
+            player.keyHandler.ArrowLeft === true ||
+            player.keyHandler.ArrowRight === true ||
+            player.keyHandler.ArrowDown === true ||
+            player.keyHandler.ArrowUp === true
+        ) {
+            tutorialStoredInfo.step = 3;
+            tutorialObj.innerText = "use r to restart";
+        }
+    } else if (step === 3) {
+        if (player.keyHandler.KeyR === true) {
+            tutorialStoredInfo.step = 0;
+            tutorialObj.innerText = "congrat, you finished the tutorial";
+            tutorialStoredInfo.active = false;
+            setTimeout(function () {
+                tutorialObj.innerHTML = tutorialStoredInfo.origInnerText;
+                tutorialStoredInfo.origInnerText = "";
+                document.getElementById("tutorial_activate").addEventListener("click", () => {
+                    tutorialStoredInfo.origInnerText = document.getElementById("tutorial").innerHTML
+                    tutorial(1)
+                    console.log("true")
+                });
+            }, 3000);
+        }
+    }
+}
+
+// drawing the game
 function drawWorld() {
     background("white");
-    let i = world[0];
-    if (xL != 0 || zU != 0 || xR != 0 || zD != 0) {
-        if (xL) {
-            i.x -= speedX;
+    for (let i = 0; i < world.length; i++) {
+        if (xL != 0 || zF != 0 || xR != 0 || zB != 0) {
+            if (xL) {
+                world[i].x -= speedX;
+            }
+            if (xR) {
+                world[i].x += speedX;
+            }
+            if (zF) {
+                world[i].h += speedZ;
+                world[i].y -= speedZ;
+                world[i].w += speedZ;
+            }
+            if (zB) {
+                world[i].h -= speedZ;
+                world[i].y += speedZ;
+                world[i].w -= speedZ;
+            }
         }
-        if (xR) {
-            i.x += speedX;
+        if (world[i].h === 0 || i.w === 0) {
+            world[i] = "";
         }
-        if (zU) {
-            i.h += speedZ;
-            i.y -= speedZ;
-            i.w += speedZ;
-        }
-        if (zD) {
-            i.h -= speedZ;
-            i.y += speedZ;
-            i.w -= speedZ;
-        }
-        (xL = 0), (xR = 0), (zU = 0), (zD = 0);
-    }
-    if (i.h === 0 || i.w === 0) {
-        world[0] = "";
-    }
-    worldDraw(i);
+        worldDraw(world[i]);
+    } (xL = 0), (xR = 0), (zF = 0), (zB = 0);
     requestAnimationFrame(drawWorld);
 }
 
@@ -74,20 +128,21 @@ function worldDraw(obj) {
     rect(obj.x, obj.y, obj.w, obj.h, "fill");
 }
 
+// movement
 function moveScreen() {
     if (player.keyHandler.ArrowLeft === true) {
         xL = 1;
     }
     if (player.keyHandler.ArrowUp === true) {
-        zU = 1;
+        zF = 1;
     }
     if (player.keyHandler.ArrowRight === true) {
         xR = 1;
     }
     if (player.keyHandler.ArrowDown === true) {
-        zD = 1;
+        zB = 1;
     }
     if (player.keyHandler.KeyR === true) {
-        location.reload();
+        world = [{ x: 400, y: 300, w: 50, h: 50 }]
     }
 }
