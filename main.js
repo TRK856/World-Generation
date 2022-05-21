@@ -7,11 +7,7 @@ cnv.width = window.innerWidth;
 cnv.height = window.innerHeight;
 
 // varibles + array nessasary for function of code
-let 
-    world = [
-        { x: 400, y: (cnv.height/2), w: 50, h: 50 },
-        { x: 200, y: (cnv.height/2), w: 50, h: 50 },
-    ],
+let world = [],
     tutorialStoredInfo = {
         active: false,
         origInnerText: "",
@@ -19,9 +15,12 @@ let
     player = { keyHandler: {} },
     speedX = 0,
     speedZ = 0,
-    friction = .95,
-    floor = 50;
+    friction = 0.95,
+    floor = 50,
+    moveZ = true,
+    growZ = true;
 requestAnimationFrame(drawWorld);
+randomWorldGen(10);
 
 // Event Listners
 document.getElementById("tutorial_activate").addEventListener("click", () => {
@@ -58,6 +57,22 @@ function findAllOccurancesID(obj, findValue) {
         }
     }
     return [placeInArray, numberOfFindValues];
+}
+
+function randomWorldGen(num) {
+    console.log("hi");
+    for (let i = 0; i < num; i++) {
+        world.push(randomWorld());
+    }
+}
+
+function randomWorld() {
+    return {
+        x: randomInt(0, cnv.width - 100),
+        y: cnv.height / 2,
+        w: 10,
+        h: 10,
+    };
 }
 
 // tutorial
@@ -101,15 +116,37 @@ function tutorial(step) {
 // drawing the game
 function drawWorld() {
     ctx.clearRect(0, 0, cnv.width, cnv.height);
-    moveScreen()
-     for (let i = 0; i < world.length; i++) {
-            world[i].x += speedX;
-            worldDraw(world[i]);
+    moveScreen();
+    for (let i = 0; i < world.length; i++) {
+        world[i].x += speedX;
+        if (growZ != false) {
+            world[i].x -= speedZ / 2;
+            world[i].y -= speedZ / 2;
+            world[i].h += speedZ;
+            world[i].w += speedZ;
         }
-    if(speedX != 0 ){
-        speedX *= friction
+        if (moveZ != false) {
+            if (world[i].x < cnv.width / 2) {
+                world[i].x -= speedZ;
+            }
+            if (world[i].x > cnv.width / 2) {
+                world[i].x += speedZ;
+            }
+        }
+        if (world[i].w <= 0 || world[i].h <= 0) {
+            world[i] = "";
+        }
+        worldDraw(world[i]);
     }
-    requestAnimationFrame(drawWorld)
+
+    if (speedX != 0) {
+        speedX *= friction;
+    }
+
+    if (speedZ != 0) {
+        speedZ *= friction;
+    }
+    requestAnimationFrame(drawWorld);
 }
 
 function worldDraw(obj) {
@@ -119,15 +156,17 @@ function worldDraw(obj) {
 
 // movement
 function moveScreen() {
-    if (player.keyHandler.ArrowLeft === true ) {
-        speedX -= .195;
+    if (player.keyHandler.ArrowLeft === true) {
+        speedX -= 0.195;
     }
     if (player.keyHandler.ArrowRight === true) {
-        speedX += .195;
+        speedX += 0.195;
     }
     if (player.keyHandler.ArrowUp === true) {
+        speedZ += 0.195;
     }
     if (player.keyHandler.ArrowDown === true) {
+        speedZ -= 0.195;
     }
     if (player.keyHandler.KeyR === true) {
         world = [{ x: 400, y: 300, w: 50, h: 50 }];

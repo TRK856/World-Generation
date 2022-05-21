@@ -33,3 +33,7 @@ button {
     word-wrap: normal;
     white-space: nowrap;
 }
+
+canvas {
+    border: 20px solid grey;
+}
