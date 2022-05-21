@@ -7,25 +7,27 @@ cnv.width = window.innerWidth;
 cnv.height = window.innerHeight;
 
 // varibles + array nessasary for function of code
-let world = [{ x: 400, y: 300, w: 50, h: 50 }, { x: 200, y: 300, w: 50, h: 50 }],
+let 
+    world = [
+        { x: 400, y: (cnv.height/2), w: 50, h: 50 },
+        { x: 200, y: (cnv.height/2), w: 50, h: 50 },
+    ],
     tutorialStoredInfo = {
         active: false,
         origInnerText: "",
     },
     player = { keyHandler: {} },
-    xL,
-    xR,
-    zF,
-    zB,
-    speedX = 3,
-    speedY = 3,
-    speedZ = 5;
+    speedX = 0,
+    speedZ = 0,
+    friction = .95,
+    floor = 50;
 requestAnimationFrame(drawWorld);
 
 // Event Listners
 document.getElementById("tutorial_activate").addEventListener("click", () => {
-    tutorialStoredInfo.origInnerText = document.getElementById("tutorial").innerHTML
-    tutorial(1)
+    tutorialStoredInfo.origInnerText =
+        document.getElementById("tutorial").innerHTML;
+    tutorial(1);
 });
 
 document.addEventListener("keydown", (e) => {
@@ -83,11 +85,14 @@ function tutorial(step) {
             setTimeout(function () {
                 tutorialObj.innerHTML = tutorialStoredInfo.origInnerText;
                 tutorialStoredInfo.origInnerText = "";
-                document.getElementById("tutorial_activate").addEventListener("click", () => {
-                    tutorialStoredInfo.origInnerText = document.getElementById("tutorial").innerHTML
-                    tutorial(1)
-                    console.log("true")
-                });
+                document
+                    .getElementById("tutorial_activate")
+                    .addEventListener("click", () => {
+                        tutorialStoredInfo.origInnerText =
+                            document.getElementById("tutorial").innerHTML;
+                        tutorial(1);
+                        console.log("true");
+                    });
             }, 3000);
         }
     }
@@ -95,34 +100,16 @@ function tutorial(step) {
 
 // drawing the game
 function drawWorld() {
-    background("white");
-    for (let i = 0; i < world.length; i++) {
-        if (xL != 0 || zF != 0 || xR != 0 || zB != 0) {
-            if (xL) {
-                world[i].x -= speedX;
-            }
-            if (xR) {
-                world[i].x += speedX;
-            }
-            if (zF) {
-                world[i].h += speedZ;
-                world[i].y -= (speedZ) / 2;
-                world[i].w += speedZ;
-                world[i].x -= (speedZ) / 2;
-            }
-            if (zB) {
-                world[i].h -= speedZ;
-                world[i].y += (speedZ) / 2;;
-                world[i].w -= speedZ;
-                world[i].x += (speedZ) / 2;
-            }
+    ctx.clearRect(0, 0, cnv.width, cnv.height);
+    moveScreen()
+     for (let i = 0; i < world.length; i++) {
+            world[i].x += speedX;
+            worldDraw(world[i]);
         }
-        if (world[i].h === 0 || i.w === 0) {
-            world[i] = "";
-        }
-        worldDraw(world[i]);
-    } (xL = 0), (xR = 0), (zF = 0), (zB = 0);
-    requestAnimationFrame(drawWorld);
+    if(speedX != 0 ){
+        speedX *= friction
+    }
+    requestAnimationFrame(drawWorld)
 }
 
 function worldDraw(obj) {
@@ -132,19 +119,17 @@ function worldDraw(obj) {
 
 // movement
 function moveScreen() {
-    if (player.keyHandler.ArrowLeft === true) {
-        xL = 1;
-    }
-    if (player.keyHandler.ArrowUp === true) {
-        zF = 1;
+    if (player.keyHandler.ArrowLeft === true ) {
+        speedX -= .195;
     }
     if (player.keyHandler.ArrowRight === true) {
-        xR = 1;
+        speedX += .195;
+    }
+    if (player.keyHandler.ArrowUp === true) {
     }
     if (player.keyHandler.ArrowDown === true) {
-        zB = 1;
     }
     if (player.keyHandler.KeyR === true) {
-        world = [{ x: 400, y: 300, w: 50, h: 50 }]
+        world = [{ x: 400, y: 300, w: 50, h: 50 }];
     }
 }
