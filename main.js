@@ -6,7 +6,6 @@ let ctx = cnv.getContext("2d");
 cnv.width = window.innerWidth;
 cnv.height = window.innerHeight;
 
-// varibles + array nessasary for function of code
 let world = [],
     tutorialStoredInfo = {
         active: false,
@@ -20,6 +19,7 @@ let world = [],
     moveZ = true,
     growZ = true;
 requestAnimationFrame(drawWorld);
+randomWorldGen(3);
 
 // Event Listners
 document.getElementById("tutorial_activate").addEventListener("click", () => {
@@ -156,10 +156,10 @@ function worldDraw(obj) {
 // movement
 function moveScreen() {
     if (player.keyHandler.ArrowLeft === true) {
-        speedX -= 0.195;
+        speedX += 0.195;
     }
     if (player.keyHandler.ArrowRight === true) {
-        speedX += 0.195;
+        speedX -= 0.195;
     }
     if (player.keyHandler.ArrowUp === true) {
         speedZ += 0.195;
@@ -172,17 +172,17 @@ function moveScreen() {
     }
 }
 
-// tree
-let x = 200;
-let y = cnv.height / 2;
-let y2 = randomDec(100, 150);
+// // tree
+// let x = 200;
+// let y = cnv.height / 2;
+// let y2 = randomDec(100, 150);
 
-line(x, y, x, y2);
-ctx.save();
-ctx.translate(17, 30);
-ctx.scale(1, 1);
+// line(x, y, x, y2);
+// ctx.save();
+// ctx.translate(17, 30);
+// ctx.scale(1, 1);
 
-line(x, y, x, y2);
-ctx.restore();
-ctx.scale(2, 1);
-line(x, y, x, y2);
+// line(x, y, x, y2);
+// ctx.restore();
+// ctx.scale(2, 1);
+// line(x, y, x, y2);
