@@ -20,7 +20,6 @@ let world = [],
     moveZ = true,
     growZ = true;
 requestAnimationFrame(drawWorld);
-randomWorldGen(10);
 
 // Event Listners
 document.getElementById("tutorial_activate").addEventListener("click", () => {
@@ -172,3 +171,18 @@ function moveScreen() {
         world = [{ x: 400, y: 300, w: 50, h: 50 }];
     }
 }
+
+// tree
+let x = 200;
+let y = cnv.height / 2;
+let y2 = randomDec(100, 150);
+
+line(x, y, x, y2);
+ctx.save();
+ctx.translate(17, 30);
+ctx.scale(1, 1);
+
+line(x, y, x, y2);
+ctx.restore();
+ctx.scale(2, 1);
+line(x, y, x, y2);
