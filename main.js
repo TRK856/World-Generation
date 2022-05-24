@@ -59,7 +59,6 @@ function findAllOccurancesID(obj, findValue) {
 }
 
 function randomWorldGen(num) {
-    console.log("hi");
     for (let i = 0; i < num; i++) {
         world.push(randomWorld());
     }
@@ -116,14 +115,23 @@ function tutorial(step) {
 function drawWorld() {
     ctx.clearRect(0, 0, cnv.width, cnv.height);
     moveScreen();
+    if (speedX != 0) {
+        speedX *= friction;
+    }
+    if (speedZ != 0) {
+        speedZ *= friction;
+    }
+
     for (let i = 0; i < world.length; i++) {
         world[i].x += speedX;
+
         if (growZ != false) {
             world[i].x -= speedZ / 2;
             world[i].y -= speedZ / 2;
             world[i].h += speedZ;
             world[i].w += speedZ;
         }
+
         if (moveZ != false) {
             if (world[i].x < cnv.width / 2) {
                 world[i].x -= speedZ;
@@ -132,25 +140,20 @@ function drawWorld() {
                 world[i].x += speedZ;
             }
         }
-        if (world[i].w <= 0 || world[i].h <= 0) {
-            world[i] = "";
-        }
+
         worldDraw(world[i]);
     }
 
-    if (speedX != 0) {
-        speedX *= friction;
-    }
-
-    if (speedZ != 0) {
-        speedZ *= friction;
-    }
     requestAnimationFrame(drawWorld);
 }
 
 function worldDraw(obj) {
     fill("red");
-    rect(obj.x, obj.y, obj.w, obj.h, "fill");
+    if (obj.w <= 0 || obj.h <= 0) {
+        world[i] = "";
+    } else {
+        rect(obj.x, obj.y, obj.w, obj.h, "fill");
+    }
 }
 
 // movement
@@ -171,18 +174,3 @@ function moveScreen() {
         world = [{ x: 400, y: 300, w: 50, h: 50 }];
     }
 }
-
-// // tree
-// let x = 200;
-// let y = cnv.height / 2;
-// let y2 = randomDec(100, 150);
-
-// line(x, y, x, y2);
-// ctx.save();
-// ctx.translate(17, 30);
-// ctx.scale(1, 1);
-
-// line(x, y, x, y2);
-// ctx.restore();
-// ctx.scale(2, 1);
-// line(x, y, x, y2);
