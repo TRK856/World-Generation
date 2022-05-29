@@ -7,19 +7,24 @@ cnv.width = window.innerWidth;
 cnv.height = window.innerHeight;
 
 let world = [],
+    backgroundStoredInfo = {
+        origInnerText: "",
+        active: false,
+    },
     tutorialStoredInfo = {
         active: false,
         origInnerText: "",
     },
     player = { keyHandler: {} },
-    speedX = 0,
-    speedZ = 0,
+    xSpeed = 0,
+    screenCenterX = cnv.width / 2,
+    screenCenterY = cnv.height / 2,
+    scaleRealTime = 250,
     friction = 0.95,
     floor = 50,
-    moveZ = true,
-    growZ = true;
+    zSpeed = 0;
 requestAnimationFrame(drawWorld);
-randomWorldGen(3);
+randomWorldGen(randomInt(1, 7));
 
 // Event Listners
 document.getElementById("tutorial_activate").addEventListener("click", () => {
@@ -28,8 +33,20 @@ document.getElementById("tutorial_activate").addEventListener("click", () => {
     tutorial(1);
 });
 
+document.getElementById("background_info").addEventListener("click", () => {
+    backgroundStoredInfo.active = true;
+    backgroundStoredInfo.origInnerText =
+        document.getElementById("tutorial").innerHTML;
+    let tutorialObj = document.getElementById("tutorial");
+    tutorialObj.innerText =
+        "    This was made totally by accident, by me the famous creator : ) \n \n in all truths tho, Idk wut this is, except it, makes cool patterns \n \n What I recommend is to populate the thing with a lot of shapes, \n and then go in towards them causing them to make a cool translation \n lol I just realized that I wasted so much time \n and my portfolio is going to be trash \n Sadge, it's rlly hard to convey how much time you \n spent on something that doesn't even seem that impressive. \n I am sure for a pro they could have done this in an hour or two, \n but it took me so long i have lost track hours to work on : ( \n \n \n *USE D TO RETURN*";
+});
+
 document.addEventListener("keydown", (e) => {
     player.keyHandler[e.code] = true;
+    if (e.code === "KeyR") {
+        randomWorldGen(1);
+    }
     if (tutorialStoredInfo.active === true) {
         if (tutorialStoredInfo.step === 2) {
             tutorial(tutorialStoredInfo.step);
@@ -37,6 +54,16 @@ document.addEventListener("keydown", (e) => {
         if (tutorialStoredInfo.step === 3) {
             tutorial(tutorialStoredInfo.step);
         }
+    }
+    if (backgroundStoredInfo.active === true && e.code === "KeyD") {
+        document.getElementById("tutorial").innerText = "returning..";
+        setTimeout(function () {
+            document.getElementById("tutorial").innerHTML =
+                backgroundStoredInfo.origInnerText;
+            backgroundStoredInfo.origInnerText = "";
+            backgroundStoredInfo.active = false;
+            restoreEventListnersTurorial();
+        }, 1000);
     }
     moveScreen();
 });
@@ -58,19 +85,12 @@ function findAllOccurancesID(obj, findValue) {
     return [placeInArray, numberOfFindValues];
 }
 
-function randomWorldGen(num) {
-    for (let i = 0; i < num; i++) {
-        world.push(randomWorld());
+function randomNumber() {
+    if (randomInt(-1, 1) === 0) {
+        return randomInt(9000, 10000);
+    } else {
+        return randomInt(-9000, -10000);
     }
-}
-
-function randomWorld() {
-    return {
-        x: randomInt(0, cnv.width - 100),
-        y: cnv.height / 2,
-        w: 10,
-        h: 10,
-    };
 }
 
 // tutorial
@@ -79,67 +99,64 @@ function tutorial(step) {
     if (step === 1) {
         tutorialStoredInfo.active = true;
         tutorialStoredInfo.step = 2;
-        tutorialObj.innerText = "use the arrow keys to move";
+        tutorialObj.innerText = "use the up/down keys to move the squares";
     } else if (step === 2) {
         if (
-            player.keyHandler.ArrowLeft === true ||
-            player.keyHandler.ArrowRight === true ||
             player.keyHandler.ArrowDown === true ||
             player.keyHandler.ArrowUp === true
         ) {
             tutorialStoredInfo.step = 3;
-            tutorialObj.innerText = "use r to restart";
+            tutorialObj.innerText = "use r to add some more squares";
         }
     } else if (step === 3) {
         if (player.keyHandler.KeyR === true) {
             tutorialStoredInfo.step = 0;
-            tutorialObj.innerText = "congrat, you finished the tutorial";
+            tutorialObj.innerText =
+                "congrats, you are on your way to some funcky patterns";
             tutorialStoredInfo.active = false;
             setTimeout(function () {
                 tutorialObj.innerHTML = tutorialStoredInfo.origInnerText;
                 tutorialStoredInfo.origInnerText = "";
-                document
-                    .getElementById("tutorial_activate")
-                    .addEventListener("click", () => {
-                        tutorialStoredInfo.origInnerText =
-                            document.getElementById("tutorial").innerHTML;
-                        tutorial(1);
-                        console.log("true");
-                    });
-            }, 3000);
+                restoreEventListnersTurorial();
+            }, 4000);
         }
     }
+}
+
+function restoreEventListnersTurorial() {
+    document
+        .getElementById("tutorial_activate")
+        .addEventListener("click", () => {
+            tutorialStoredInfo.origInnerText =
+                document.getElementById("tutorial").innerHTML;
+            tutorial(1);
+        });
+
+    document.getElementById("background_info").addEventListener("click", () => {
+        backgroundStoredInfo.origInnerText =
+            document.getElementById("tutorial").innerHTML;
+        let tutorialObj = document.getElementById("tutorial");
+        backgroundStoredInfo.active = true;
+        tutorialObj.innerText =
+            "    This was made totally by accident, by me the famous creator : ) \n \n in all truths tho, Idk wut this is, except it, makes cool patterns \n \n What I recommend is to populate the thing with a lot of shapes, \n and then go in towards them causing them to make a cool translation \n lol I just realized that I wasted so much time \n and my portfolio is going to be trash \n Sadge, it's rlly hard to convey how much time you \n spent on something that doesn't even seem that impressive. \n I am sure for a pro they could have done this in an hour or two, \n but it took me so long i have lost track hours to work on : ( \n \n \n *USE D TO RETURN*";
+    });
 }
 
 // drawing the game
 function drawWorld() {
     ctx.clearRect(0, 0, cnv.width, cnv.height);
+
     moveScreen();
-    if (speedX != 0) {
-        speedX *= friction;
+    if (xSpeed != 0) {
+        xSpeed *= friction;
     }
-    if (speedZ != 0) {
-        speedZ *= friction;
+
+    if (zSpeed != 0) {
+        xSpeed *= friction;
     }
 
     for (let i = 0; i < world.length; i++) {
-        world[i].x += speedX;
-
-        if (growZ != false) {
-            world[i].x -= speedZ / 2;
-            world[i].y -= speedZ / 2;
-            world[i].h += speedZ;
-            world[i].w += speedZ;
-        }
-
-        if (moveZ != false) {
-            if (world[i].x < cnv.width / 2) {
-                world[i].x -= speedZ;
-            }
-            if (world[i].x > cnv.width / 2) {
-                world[i].x += speedZ;
-            }
-        }
+        world[i].x += xSpeed;
 
         worldDraw(world[i]);
     }
@@ -148,29 +165,53 @@ function drawWorld() {
 }
 
 function worldDraw(obj) {
+    obj.z += zSpeed;
+
+    obj.scale = scaleRealTime / (scaleRealTime + obj.z);
+
     fill("red");
-    if (obj.w <= 0 || obj.h <= 0) {
-        world[i] = "";
-    } else {
-        rect(obj.x, obj.y, obj.w, obj.h, "fill");
-    }
+    ctx.save();
+    ctx.translate(screenCenterX, screenCenterY);
+    ctx.scale(obj.scale, obj.scale);
+
+    fill(obj.color, obj.lineWidth);
+    rect(obj.x, obj.y, obj.w, obj.h, "fill");
+
+    ctx.restore();
 }
 
 // movement
 function moveScreen() {
     if (player.keyHandler.ArrowLeft === true) {
-        speedX += 0.195;
+        xSpeed += 0.195;
     }
     if (player.keyHandler.ArrowRight === true) {
-        speedX -= 0.195;
+        xSpeed -= 0.195;
     }
     if (player.keyHandler.ArrowUp === true) {
-        speedZ += 0.195;
+        zSpeed -= 0.97;
     }
     if (player.keyHandler.ArrowDown === true) {
-        speedZ -= 0.195;
+        zSpeed += 0.97;
     }
-    if (player.keyHandler.KeyR === true) {
-        world = [{ x: 400, y: 300, w: 50, h: 50 }];
+}
+
+// world
+function randomWorldGen(num) {
+    for (let i = 0; i < num; i++) {
+        world.push(randomWorld());
     }
+}
+
+function randomWorld() {
+    return {
+        x: randomInt(-cnv.width, cnv.width),
+        y: randomInt(-cnv.height, cnv.height),
+        w: randomNumber(),
+        h: randomNumber(),
+        z: randomInt(5000, 10000),
+        scale: 1,
+        lineWidth: randomInt(3, 10),
+        color: randomRGB(),
+    };
 }

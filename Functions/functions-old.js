@@ -40,7 +40,7 @@ function rect(x, y, w, h, mode) {
     if (mode === "fill") {
         ctx.fillRect(x, y, w, h);
     } else if (mode === "stroke") {
-        ctx.filstrokeRect(x, y, w, h);
+        ctx.strokeRect(x, y, w, h);
     }
 }
 
